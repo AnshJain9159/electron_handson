@@ -1,6 +1,9 @@
+/* eslint-disable prettier/prettier */
+
 import clsx, { ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
+//yaha se date set hogi
 const dateFormatter = new Intl.DateTimeFormat(window.context.locale, {
   dateStyle: 'short',
   timeStyle: 'short',
