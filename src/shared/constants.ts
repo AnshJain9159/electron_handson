@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
-export const appDirectoryName = 'notes'
+export const appDirectoryName = 'note'
 export const fileEncoding = 'utf8'
 
 export const autoSavingTime = 3000

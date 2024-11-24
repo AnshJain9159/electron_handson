@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { CreateNote, DeleteNote, GetNotes, ReadNote, WriteNote } from '@shared/types'
 
 declare global {

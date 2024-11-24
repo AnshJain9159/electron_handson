@@ -3,11 +3,25 @@ import { NoteContent, NoteInfo } from '@shared/models'
 import { atom } from 'jotai'
 import { unwrap } from 'jotai/utils'
 
+//yeh function notes ko windows me  se load karke laayega time ke hisab se sort karke
 const loadNotes = async () => {
-  const notes = await window.context.getNotes()
-  return notes.sort((a, b) => b.lastEditTime - a.lastEditTime)
-}
+  try {
+    const notes = await window.context.getNotes();
+    
+    if (!Array.isArray(notes)) {
+      console.error("getNotes did not return an array:", notes);
+      return [];
+    }
+    
+    return notes.sort((a, b) => b.lastEditTime - a.lastEditTime);
+  } catch (error) {
+    console.error("Error loading notes:", error);
+    return [];
+  }
+};
 
+
+//yeh load notes ko call karega
 const notesAtomAsync = atom<NoteInfo[] | Promise<NoteInfo[]>>(loadNotes())
 
 export const notesAtom = unwrap(notesAtomAsync, (prev) => prev)
@@ -17,13 +31,9 @@ export const selectedNoteIndexAtom = atom<number | null>(null)
 const selectedNoteAtomAsync = atom(async (get) => {
   const notes = get(notesAtom)
   const selectedNoteIndex = get(selectedNoteIndexAtom)
-
   if (selectedNoteIndex == null || !notes) return null
-
   const selectedNote = notes[selectedNoteIndex]
-
   const noteContent = await window.context.readNote(selectedNote.title)
-
   return {
     ...selectedNote,
     content: noteContent
@@ -60,7 +70,6 @@ export const saveNoteAtom = atom(null, async (get, set, newContent: NoteContent)
           lastEditTime: Date.now()
         }
       }
-
       return note
     })
   )

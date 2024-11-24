@@ -12,13 +12,11 @@ export const useMarkdownEditor = () => {
   const selectedNote = useAtomValue(selectedNoteAtom)
   const saveNote = useSetAtom(saveNoteAtom)
   const editorRef = useRef<MDXEditorMethods>(null)
-
+  //yeh function auto saving krega notes me jo b nya text hoga
   const handleAutoSaving = throttle(
     async (content: NoteContent) => {
       if (!selectedNote) return
-
       console.info('Auto saving:', selectedNote.title)
-
       await saveNote(content)
     },
     autoSavingTime,
@@ -30,11 +28,8 @@ export const useMarkdownEditor = () => {
 
   const handleBlur = async () => {
     if (!selectedNote) return
-
     handleAutoSaving.cancel()
-
     const content = editorRef.current?.getMarkdown()
-
     if (content != null) {
       await saveNote(content)
     }
