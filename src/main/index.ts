@@ -7,36 +7,43 @@ import icon from '../../resources/icon.png?asset'
 import { createNote, deleteNote, getNotes, readNote, writeNote } from './lib'
 import { CreateNote, DeleteNote, GetNotes, ReadNote, WriteNote } from '@shared/types'
 
+let mainWindow: BrowserWindow | null = null; 
+
 function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  if (mainWindow) return; // Prevent multiple windows
+
+   mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
     autoHideMenuBar: true,
     center: true,
     frame: true,
-    vibrancy: 'under-window',
-    visualEffectState: 'active',
+    ...(process.platform === 'win32'
+      ? { backgroundColor: '#00000000', transparent: true }
+      : { vibrancy: 'under-window', visualEffectState: 'active' }),
     trafficLightPosition: { x: 15, y: 10 },
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
-      contextIsolation: true
-    }
-  })
+      contextIsolation: true,
+    },
+  });
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
+
+  mainWindow.on('closed', () => {
+    mainWindow = null; 
+  });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
@@ -54,12 +61,11 @@ app.whenReady().then(() => {
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
+  //yaha se sare features invoke honge application ke
   ipcMain.on('ping', () => console.log('pong'))
   ipcMain.handle('getNotes',(_,...args: Parameters<GetNotes>)=>getNotes(...args))
   ipcMain.handle('readNote',(_,...args: Parameters<ReadNote>)=>readNote(...args))
@@ -70,9 +76,8 @@ app.whenReady().then(() => {
   createWindow()
   ipcMain.handle('deleteNote',(_,...args: Parameters<DeleteNote>)=>deleteNote(...args))
   createWindow()
+
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })

@@ -7,48 +7,32 @@ import {
   ActionButtonsRow,
   NotePreviewList,
   FloatingNoteTitle,
-  MarkdownEditor,
-} from './components';
-import { useRef } from 'react';
+  MarkdownEditor
+} from './components'
+import { useRef } from 'react'
+// import CustomTitleBar from './components/Topbar'
 
 const App = () => {
-  const contentContainerRef = useRef<HTMLDivElement>(null);
-
-  // Resets scroll to the top of the content container
+  const contentContainerRef = useRef<HTMLDivElement>(null)
   const resetScroll = () => {
-    contentContainerRef.current?.scrollTo(0, 0);
-  };
-
+    contentContainerRef.current?.scrollTo(0, 0)
+  }
   return (
     <>
-      {/* Top Bar that can be dragged */}
+      {/* <CustomTitleBar/> */}
       <DraggableTopBar />
-
-      {/* Main Layout */}
       <RootLayout>
-        {/* Sidebar Section */}
-        <Sidebar className="p-2">
-          {/* Action Buttons Row */}
+        <Sidebar className="p-2 ">
           <ActionButtonsRow className="flex justify-between mt-1" />
-
-          {/* List of Note Previews */}
-          <NotePreviewList 
-            className="mt-3 space-y-1" 
-            onSelect={resetScroll} 
-          />
+          <NotePreviewList className="mt-3 space-y-1" onSelect={resetScroll} />
         </Sidebar>
-
-        {/* Main Content Section */}
-        <Content className="border-blue-500 bg-zinc-900/50 border-l border-l-white/20">
-          {/* Floating Note Title */}
+        <Content className=" border-blue-500 bg-zinc-900/50 border-l border-l-white/20">
           <FloatingNoteTitle className="pt-2" />
-
-          {/* Markdown Editor for Note Content */}
           <MarkdownEditor />
         </Content>
       </RootLayout>
     </>
-  );
-};
+  )
+}
 
-export default App;
+export default App

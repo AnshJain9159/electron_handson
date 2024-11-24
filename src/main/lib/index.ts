@@ -8,13 +8,15 @@ import { dialog } from "electron";
 import path from "path";
 import welcomeNoteFile from '../../../resources/welcomeNote.md?asset'
 import { isEmpty } from 'lodash'
+import { join } from 'path';
 
 export const getRootDir = () => {
-    return `${homedir()}/${appDirectoryName}`
-}
+    return join(homedir(), appDirectoryName);
+};
 
 export const getNotes :GetNotes = async() => {
     const rootDir= getRootDir();
+    console.log(rootDir)
     await ensureDir(rootDir);
 
     const notesFileNames = await readdir(rootDir, {
@@ -69,7 +71,7 @@ export const createNote: CreateNote = async () => {
         filters: [{name : 'Markdown',extensions: ['md']}]
     })
 
-    if(!canceled || !filePath) {
+    if(canceled || !filePath) {
         console.info('Note creation failed')
         return false
     }
